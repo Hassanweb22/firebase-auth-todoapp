@@ -1,0 +1,22 @@
+body {
+  /* background-image: url('../src/images/background.jpg'); */
+  background: #134e5e; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #71b280,
+    #134e5e
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #71b280,
+    #134e5e
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+table tr td svg {
+  cursor: pointer;
+}
+table thead {
+  background-color: #343a40;
+  color: white;
+}
