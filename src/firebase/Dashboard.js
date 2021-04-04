@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button, Card, Row, ListGroupItem, Table } from "react-bootstrap"
+import { Form, Button, Card, Row, Table } from "react-bootstrap"
 import { PencilFill, Trash } from "react-bootstrap-icons"
 import firebase from "./fire"
 import { useHistory } from "react-router-dom"
@@ -17,7 +17,7 @@ export default function Dashboard() {
     const [usertasks, setUsertasks] = useState({})
     let { title, descr } = state
 
-    useEffect(() => {
+    const firebaseData = () => {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 // https://firebase.google.com/docs/reference/js/firebase.User
@@ -33,7 +33,10 @@ export default function Dashboard() {
                 setCurrentuser({})
             }
         });
-
+    }
+    useEffect(() => {
+        firebaseData()
+        return () => console.log("Something has changed")
     }, [])
 
 

@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
-import { Form, Button, Card } from "react-bootstrap"
+import React, { useState, useEffect } from 'react'
+import { Form, Button, Card, Alert } from "react-bootstrap"
 import { useHistory } from 'react-router-dom'
 import firebase from "./fire"
+import { X as Cancel } from "react-bootstrap-icons"
+import "./style.css"
 
 export default function Login() {
     let history = useHistory()
@@ -10,7 +12,14 @@ export default function Login() {
         password: "",
     }
     const [state, setState] = useState(initialState)
+    const [error, setError] = useState("")
+
     let { email, password } = state
+
+    useEffect(() => {
+        console.log("Login state", state)
+        return () => console.log("Login removed")
+    }, [])
 
     const handleChange = (e) => {
         let { name, value } = e.target
@@ -27,12 +36,16 @@ export default function Login() {
                 // var userInfo = userCredential.user;
                 history.push("./dashboard")
                 console.log("Loginuser", user)
-
             })
             .catch((error) => {
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                console.log("Loginerror", errorCode, errorMessage)
+                console.log("errorCode", error.code)
+                console.log("errorMessage", error.message)
+                if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
+                    setError(error.message)
+                    return setTimeout(() => {
+                        setError("")
+                    }, 3200);
+                }
             });
     }
     let validate = () => (state.email && state.password) ? true : false
@@ -43,7 +56,12 @@ export default function Login() {
         <div className="container mt-5">
             <h2 className="text-center text-capitalize main_heading mt-3">Login</h2>
             <div className="row">
-                <Card className="card_body col-lg-8 col-sm-12 col-md-10 col-12 mx-auto " style={{ width: '40rem' }}>
+                <Card className="card_body col-lg-8 col-sm-12 col-md-10 col-11 mx-auto " style={{ width: '40rem' }}>
+                    {error ?
+                        <Alert className={`alert mt-3 ${!error ? "out" : ""}`} variant="danger">{error}
+                            {/* <Cancel color="black" className="" onClick={_ => setError("")} /> */}
+                        </Alert>
+                        : null}
                     <Form className="my-3" onSubmit={handleSubmit}>
                         <Form.Group controlId="formTitle">
                             <Form.Label>Email</Form.Label>

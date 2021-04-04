@@ -9,7 +9,10 @@
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.4.0",
     "firebase": "^8.3.1",
+    "radium": "^0.26.1",
     "react": "^16.13.1",
+    "react-animated-css": "^1.2.1",
+    "react-animations": "^1.0.0",
     "react-bootstrap": "^1.5.2",
     "react-bootstrap-icons": "^1.4.0",
     "react-dom": "^16.13.1",
@@ -17,6 +20,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "redux": "^4.0.5",
+    "styled-components": "^5.2.3",
     "yarn": "^1.22.5"
   },
   "scripts": {

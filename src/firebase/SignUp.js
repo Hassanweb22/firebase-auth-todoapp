@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button, Card } from "react-bootstrap"
+import { Form, Button, Card, Alert, Spinner } from "react-bootstrap"
+import { X } from "react-bootstrap-icons"
 import { useHistory } from 'react-router-dom'
 import firebase from "./fire"
+import "./style.css"
+import styled, { keyframes } from "styled-components"
+import { bounce } from "react-animations"
+
 
 export default function SignUp() {
+    const Bounce = styled.div`
+    animations: 2s ${keyframes`${bounce}`} infinite
+    `
+
     const history = useHistory()
     let initialState = {
         username: "",
@@ -11,12 +20,14 @@ export default function SignUp() {
         password: "",
     }
     const [state, setState] = useState(initialState)
+    const [error, setError] = useState("")
     let { email, password, username } = state
 
     useEffect(() => {
         if (firebase.auth().currentUser) {
             console.log("signuped")
         }
+        return () => console.log("signUp removed")
     }, [])
 
     const handleChange = (e) => {
@@ -33,8 +44,7 @@ export default function SignUp() {
         firebase.auth().createUserWithEmailAndPassword(email, password)
             .then(({ user }) => {
                 let obj = { username, email: user.email, password, key: user.uid }
-                console.log("Signupuser", user.uid)
-                history.push("./dashboard")
+                // console.log("Signupuser", user.uid)
                 firebase.database().ref('users/' + user.uid + "/personal").set(
                     obj,
                     err => {
@@ -42,13 +52,21 @@ export default function SignUp() {
                             console.log("error", err)
                         }
                     });
+                history.push("./dashboard")
+                setState(initialState)
             })
             .catch((error) => {
                 var errorCode = error.code;
                 var errorMessage = error.message;
-                console.log("Signuperror", errorCode, errorMessage)
+                console.log("error Code", errorCode)
+                console.log("errorMessage", errorMessage)
+                if (errorCode === "auth/weak-password" || errorCode === "auth/email-already-in-use") {
+                    setError(errorMessage)
+                    return setTimeout(() => {
+                        setError("")
+                    }, 3200);
+                }
             });
-        setState(initialState)
     }
     let validate = () => (username && email && password) ? true : false
 
@@ -57,9 +75,14 @@ export default function SignUp() {
 
         <div className="container mt-5">
             <h2 className="text-center text-capitalize main_heading mt-3">Signup</h2>
-            <div className="row">
-                <Card className="card_body col-lg-8 col-sm-12 col-md-10 col-12 mx-auto " style={{ width: '40rem' }}>
-                    <Form className="my-3" onSubmit={handleSubmit}>
+            <div className="row show">
+                <Card className="card_body col-lg-8 col-sm-12 col-md-10 col-11 mx-auto " style={{ width: '40rem' }}>
+                    {error ?
+                        <Alert className={`alert mt-3`} variant="danger">{error}
+                            {/* <X color="black" className="" onClick={_ => setError("")} /> */}
+                        </Alert>
+                        : null}
+                    < Form className="my-3" onSubmit={handleSubmit}>
                         <Form.Group controlId="formUsername">
                             <Form.Label>Username</Form.Label>
                             <Form.Control type="text" placeholder="Enter Username"
@@ -85,10 +108,12 @@ export default function SignUp() {
                             />
                         </Form.Group>
                         <Button className="w-100" variant="primary" type="submit" disabled={!validate()}>
-                            {"Submit"}</Button>
+                            {firebase.auth().currentUser ?
+                                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Submit"}
+                        </Button>
                     </Form>
                 </Card>
             </div>
-        </div>
+        </div >
     )
 }
